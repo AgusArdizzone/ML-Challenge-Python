@@ -30,7 +30,7 @@ def get_currency_data(url, currency):
         currency_data = requests.get(url + currency)
         # Check if the response is valid
         if currency_data.status_code != 200:
-            raise Exception("Status code not 200")
+            raise Exception(f"Could not fetch data correctly.(Status code: {currency_data.status_code})")
 
         # If response is OK, return the json file
         return currency_data.json()
@@ -131,3 +131,7 @@ if currency_data:
     currency_df = transform_currency_json_to_df(currency_data)
     save_currency_data(currency_df)
     print("Data transformation and saving completed.")
+else:
+    print("Error ocurred. Proceeding to exit.")
+
+print("Script finished.")
