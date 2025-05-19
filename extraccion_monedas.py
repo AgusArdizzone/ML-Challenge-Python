@@ -1,15 +1,20 @@
 import requests
 import pandas as pd
 import os
+from dotenv import load_dotenv
 
-url = "https://economia.awesomeapi.com.br/json/last/"
-currency = "USD-BRL,EUR-BRL,BTC-BRL"
+load_dotenv()
 
-def get_currency_data(url,currency):
+
+url = os.getenv('API_URL')
+currency = os.getenv('CURRENCY_LIST')
+
+
+def get_currency_data(url, currency):
     """
     Function to get data from the API. Checks if the response is OK
     and returns the json file. If its not OK, it raises an exception.
-    
+
     Args:
         url (string): the url of the API we will use
         currency (string): the info of the currencies to get from the API
@@ -26,7 +31,7 @@ def get_currency_data(url,currency):
         # Check if the response is valid
         if currency_data.status_code != 200:
             raise Exception("Status code not 200")
-        
+
         # If response is OK, return the json file
         return currency_data.json()
 
@@ -55,10 +60,10 @@ def transform_currency_json_to_df(currency_json):
     """
 
     currency_df = pd.DataFrame(currency_json).T
-    
-    #Filter the columns we need
+
+    # Filter the columns we need
     currency_df = currency_df[['code', 'codein', 'bid', 'ask', 'timestamp']]
-    
+
     # Rename the columns to have the values better represented
     currency_df = currency_df.rename(columns={
         'code': 'moneda_base',
@@ -67,10 +72,12 @@ def transform_currency_json_to_df(currency_json):
         'ask': 'valor_venta',
         'timestamp': 'data_hora'
     })
-    
+
     # Transform the 'data_hora' column from UNIX timestamp to datetime
-    currency_df['data_hora'] = pd.to_datetime(pd.to_numeric(currency_df['data_hora']), unit='s').dt.strftime('%Y-%m-%d %H:%M:%S')
+    currency_df['data_hora'] = pd.to_datetime(pd.to_numeric(
+        currency_df['data_hora']), unit='s').dt.strftime('%Y-%m-%d %H:%M:%S')
     return currency_df
+
 
 def merge_currency_data(new_data, existing_data):
     """
@@ -87,11 +94,12 @@ def merge_currency_data(new_data, existing_data):
     """
     # Merge the new data with the existing data
     merged_data = pd.concat([existing_data, new_data], ignore_index=True)
-    
+
     # Drop duplicates based on 'moneda_base', 'moneda_destino' and 'data_hora'
     merged_data = merged_data.drop_duplicates()
-    
+
     return merged_data
+
 
 def save_currency_data(currency_df):
     """Save the currency data to a CSV file.
