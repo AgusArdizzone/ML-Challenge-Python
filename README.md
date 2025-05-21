@@ -68,3 +68,11 @@ En el archivo csv generado por el script, encontrara las siguientes columnas:
 - **data_hora**: la hora a la que esta registrada la información, en horario UTC y con el formato `yyyy-MM-dd HH:mm:ss`
 
 Para ver un ejemplo, puede visitar el archivo `ej_datos_monedas.csv`
+
+## Tecnologias utilizadas
+
+Para este proyecto se utilizo Python 3.13.3, en conjunto con las siguientes librerias:
+- `requests` para la consulta a la API.
+- `pandas` para la transformacion y manejo de los datos.
+- `dotenv` para establecer variables externas al script.
+- `os` para poder consultar las variables de entorno y crear directorios. 
